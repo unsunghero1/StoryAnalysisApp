@@ -1,0 +1,23 @@
+﻿@page "/ac-analyzer"
+@using YourApp.Analysis
+
+<h3>Acceptance Criteria Analyzer</h3>
+
+<textarea @bind="inputAC" rows="5" class="form-control"></textarea>
+<button class="btn btn-primary mt-2" @onclick="Analyze">Analyze</button>
+
+@if (!string.IsNullOrWhiteSpace(resultMessage))
+{
+    <div class="alert alert-info mt-3">@resultMessage</div>
+}
+
+@code {
+    private string inputAC;
+    private string resultMessage;
+
+    private void Analyze()
+    {
+        var (score, message) = StoryClarityEvaluator.Evaluate(inputAC);
+        resultMessage = message;
+    }
+}

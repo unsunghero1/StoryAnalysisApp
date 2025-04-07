@@ -1,0 +1,57 @@
+@page "/story-analysis"
+@inject JiraService JiraService
+@inject MLModelService MLModelService
+
+<h3>Story Analysis (ML.NET Powered)</h3>
+
+@if (Stories == null)
+{
+    <p>🔄 Loading stories from current sprint...</p>
+}
+else if (Stories.Count == 0)
+{
+    <p>🚫 No stories found in the current sprint.</p>
+}
+else
+{
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Story ID</th>
+            <th>Summary</th>
+            <th>Story Points</th>
+            <th>Predicted Complexity</th>
+            <th>AC Feedback</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var story in Stories)
+            {
+                <tr>
+                    <td>@story.Key</td>
+                    <td>@story.Fields.Summary</td>
+                    <td>@(story.Fields.StoryPoints.ToString() ?? "N/A")</td>
+                    <td>@MLModelService.PredictComplexity(story.Fields.Summary)</td>
+                    <td>@MLModelService.AnalyzeAcceptanceCriteria(story.Fields.AcceptanceCriteria)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<JiraIssue> Stories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Stories = await JiraService.GetPastSprintStories();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Failed to fetch stories: {ex.Message}");
+            Stories = new();
+        }
+    }
+}

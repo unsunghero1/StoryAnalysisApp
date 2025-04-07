@@ -14,6 +14,8 @@ public class Program
         builder.Services.AddRazorPages();
         builder.Services.AddServerSideBlazor();
         builder.Services.AddSingleton<WeatherForecastService>();
+        builder.Services.AddSingleton<JiraService>();
+        builder.Services.AddSingleton<MLModelService>();
 
         var app = builder.Build();
 
